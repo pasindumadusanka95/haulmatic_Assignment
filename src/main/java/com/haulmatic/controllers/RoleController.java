@@ -6,43 +6,69 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/role")
 public class RoleController {
 
-    private final RoleRepository roleRepository;
+    private final RoleRepository repository;
 
-    public RoleController(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
+    public RoleController(RoleRepository repository) {
+        this.repository = repository;
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+    @PostMapping("/addUser")
+    public String saveUser(@RequestBody Role role){
+        repository.save(role);
+        return "Added user with id: " + role.getId();
     }
 
-    @RequestMapping(value = "/{_id}", method = RequestMethod.GET)
-    public Role getRoleById(@PathVariable("_id") String _id) {
-        return roleRepository.findBy_id(_id);
+    @GetMapping("/findAll")
+    public List<Role> getRoles(){
+        return repository.findAll();
     }
 
-    @RequestMapping(value = "/{_id}", method = RequestMethod.PUT)
-    public void updateRoleById(@PathVariable("_id") String _id, @RequestBody Role role) {
-        role.set_id(_id);
-        roleRepository.save(role);
+    @GetMapping("/findUser/{id}")
+    public Optional<Role> getUser(@PathVariable String id){
+        return repository.findById(id);
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public Role createRole(@RequestBody Role role) {
-        role.set_id(role.get_id());
-        roleRepository.save(role);
-        return role;
+    @DeleteMapping("/delete/{id}")
+    public String deleteUser(@PathVariable String id){
+        repository.deleteById(id);
+        return "role deleted with id:" +id;
     }
 
-    @RequestMapping(value = "/{_id}", method = RequestMethod.DELETE)
-    public void deleteRole(@PathVariable String _id) {
-        roleRepository.delete(roleRepository.findBy_id(_id));
+    @PutMapping("/update/{id}")
+    public String updateUser(@PathVariable String id,@RequestBody Role role){
+        role.setId(id);
+        repository.save(role);
+        return "user update with id:" +id;
     }
+
+    @GetMapping("/findrole/{nic}")
+    public String findroleBynic(@PathVariable String nic)
+    {
+        Role role =  repository.findroleBynic(nic);
+        return "user role:"+ role.getRoleType();
+
+    }
+
+//    @GetMapping("/findAllRoles/{organization}/{nic}")
+//    public List<Role> findRoles(@PathVariable String organization,@PathVariable String nic)
+//    {
+//        List<Role> roles= new ArrayList<>();
+//       /* users = repository.findroleByorganizationroletype(organization,nic);
+//        for(User user : users) {
+//            System.out.println("user nic"+user.getNicNo());
+//        }*/
+//        return repository.findroleByorganizationroletype(organization,nic);
+//
+//
+//
+//    }
+
 }
