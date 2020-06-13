@@ -11,34 +11,38 @@ import java.util.List;
 @RestController
 @RequestMapping("/role")
 public class RoleController {
-    @Autowired
-    private RoleRepository roleRepository;
+
+    private final RoleRepository roleRepository;
+
+    public RoleController(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Role getRoleById(@PathVariable("id") ObjectId id) {
-        return roleRepository.findBy_id(id);
+    @RequestMapping(value = "/{_id}", method = RequestMethod.GET)
+    public Role getRoleById(@PathVariable("_id") String _id) {
+        return roleRepository.findBy_id(_id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void modifyPetById(@PathVariable("id") String id, @RequestBody Role role) {
-        role.setId(id);
+    @RequestMapping(value = "/{_id}", method = RequestMethod.PUT)
+    public void updateRoleById(@PathVariable("_id") String _id, @RequestBody Role role) {
+        role.set_id(_id);
         roleRepository.save(role);
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public Role createPet(@RequestBody Role role) {
-        role.setId(role.getId());
+    public Role createRole(@RequestBody Role role) {
+        role.set_id(role.get_id());
         roleRepository.save(role);
         return role;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void deletePet(@PathVariable ObjectId id) {
-        roleRepository.delete(roleRepository.findBy_id(id));
+    @RequestMapping(value = "/{_id}", method = RequestMethod.DELETE)
+    public void deleteRole(@PathVariable String _id) {
+        roleRepository.delete(roleRepository.findBy_id(_id));
     }
 }
